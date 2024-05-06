@@ -1,49 +1,36 @@
-<?php 
-$fd = fopen("titanic.csv", 'r') or die("не удалось открыть файл");
+<form method="post" action="">
+        <label for="num1">Первое число:</label>
+        <input type="text" name="num1" id="num1" required><br><br>
+        
+        <label for="num2">Второе число:</label>
+        <input type="text" name="num2" id="num2" required><br><br>
+        
+        <input type="submit" value="Умножить">
+    </form>
 
-$titles = explode(',', fgets($fd));
-$titles = array_map(fn(string $title) => "<th>$title</th>", $titles);
-$tableHeader = implode('', $titles);
+    <?php
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $num1 = $_POST["num1"];
+        $num2 = $_POST["num2"];
 
-$tableBody = '';
-
-while(!feof($fd))
-{
-    $tbody = explode(',', fgets($fd));
-    [4 => $age, 2 => $name] = $tbody;
-    if(isset($_GET['age'])) 
-    {
-        $ageReq = $_GET['age'];
-        if ($age == $ageReq){
-            $tbody = array_map(fn(string $tbody) => "<td>$tbody</td>", $tbody);
-            $tableBody .= '<tr>' . implode('', $tbody) . '</tr>';
-        }    
-    }
-    else if (isset($_GET['name'])){
-        $nameReq = $_GET['name'];
-        if(preg_match("/$nameReq/i", $name)){
-          $tbody = array_map(fn(string $tbody) => "<td>$tbody</td>", $tbody);
-          $tableBody .= '<tr>' . implode('', $tbody) . '</tr>';
+        $result = $num1 * $num2;
+        
+        echo "&nbsp;" . $num1 . "<br>";
+        echo "x " . "<br>";
+        echo "&nbsp;" . $num2 . "<br>";
+        echo "-------<br>";
+        
+        $num2_digits = str_split(strrev($num2));
+        $num2_length = strlen($num2);
+        $padding = 0;
+        
+        foreach ($num2_digits as $digit) {
+            $line_result = $num1 * $digit;
+            echo str_repeat("&nbsp;", $padding) . $line_result . "<br>";
+            $padding++;
         }
+        
+        echo "-------<br>";
+        echo $result;
     }
-    else {
-        $tbody = array_map(fn(string $tbody) => "<td>$tbody</td>", $tbody);
-        $tableBody .= '<tr>' . implode('', $tbody) . '</tr>';
-    }
-    
-}
-
-echo <<<THEAD
-<table>
-  <tr>
-    $tableHeader
-  </tr>
-  
-  $tableBody
-  
-</table>
-THEAD;
-
-fclose($fd); 
-
-?>
+    ?>
